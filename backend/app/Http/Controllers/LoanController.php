@@ -29,13 +29,13 @@ class LoanController extends Controller
             'return_date' => 'required|date',
         ]);
 
-        $book = Book::findOrFail($request->book_id);
+        $book = Book::find($request->book_id);
         
         if (!$book){
             return response()->json(['error' => 'Libro Incorrecto'], 400);
         }
 
-        $user = User::findOrFail($request->user_id);
+        $user = User::find($request->user_id);
         
         if (!$user){
             return response()->json(['error' => 'Usuario Incorrecto'], 400);
@@ -62,19 +62,24 @@ class LoanController extends Controller
             'return_date' => 'required|date',
         ]);
 
-        $book = Book::findOrFail($request->book_id);
+        $book = Book::find($request->book_id);
         
         if (!$book){
             return response()->json(['error' => 'Libro Incorrecto'], 400);
         }
 
-        $user = User::findOrFail($request->user_id);
+        $user = User::find($request->user_id);
         
         if (!$user){
             return response()->json(['error' => 'Usuario Incorrecto'], 400);
         }
 
         $loan = Loan::find($id);
+
+        if (!$loan){
+            return response()->json(['error' => 'Préstamo Incorrecto'], 400);
+        }
+
         $loan->book_id = $request->book_id;
         $loan->user_id = $request->user_id;
         $loan->status = $request->status;

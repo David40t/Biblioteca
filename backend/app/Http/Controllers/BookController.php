@@ -28,13 +28,13 @@ class BookController extends Controller
             'gender_id' => 'required|integer'
         ]);
 
-        $author = Author::findOrFail($request->author_id);
+        $author = Author::find($request->author_id);
         
         if (!$author){
             return response()->json(['error' => 'Autor Incorrecto'], 400);
         }
 
-        $gender = Gender::findOrFail($request->gender_id);
+        $gender = Gender::find($request->gender_id);
 
         if (!$gender){
             return response()->json(['error' => 'Genero Incorrecto'], 400);
@@ -59,13 +59,13 @@ class BookController extends Controller
             'gender_id' => 'required|integer'
         ]);
 
-        $author = Author::findOrFail($request->author_id);
+        $author = Author::find($request->author_id);
         
         if (!$author){
             return response()->json(['error' => 'Autor Incorrecto'], 400);
         }
 
-        $gender = Gender::findOrFail($request->gender_id);
+        $gender = Gender::find($request->gender_id);
 
         if (!$gender){
             return response()->json(['error' => 'Genero Incorrecto'], 400);
