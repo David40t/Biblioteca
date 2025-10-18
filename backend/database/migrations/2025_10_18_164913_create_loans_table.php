@@ -17,6 +17,7 @@ return new class extends Migration
             $table->unsignedBigInteger('user_id');
             $table->foreign('book_id')->references('id')->on('books');
             $table->foreign('user_id')->references('id')->on('users');
+            $table->boolean('status'); # false = no retornado, true = retornado
             $table->date('loan_date');
             $table->date('return_date');
             $table->timestamps();
