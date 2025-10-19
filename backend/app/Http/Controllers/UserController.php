@@ -33,6 +33,12 @@ class UserController extends Controller
             'password' => 'required|string|max:100'
         ]);
 
+        $userEmailDuplicate = User::where('email', $request->email)->first();
+
+        if ($userEmailDuplicate){
+            return response()->json(['error' => 'El correo electrónico ya está en uso'], 400);
+        }
+
         $user = new User();
         $user->name = $request->name;
         $user->email = $request->email;
@@ -48,6 +54,13 @@ class UserController extends Controller
             'name' => 'required|string|max:100',
             'email' => 'required|string|email|max:100'
         ]);
+
+        $userEmailDuplicate = User::where('email', $request->email)->where('id', '!=', $id)->first();
+
+        if ($userEmailDuplicate){
+            return response()->json(['error' => 'El correo electrónico ya está en uso en otro usuario'], 400);
+        }
+
         $user = User::find($id);
         $user->name = $request->name;
         $user->email = $request->email;

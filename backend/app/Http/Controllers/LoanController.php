@@ -11,7 +11,7 @@ class LoanController extends Controller
 {
     public function index()
     {
-        return response()->json(Loan::with('book', 'user')->get()->sortByDesc('loan_date'));
+        return response()->json(Loan::with('book', 'user')->get());
     }
 
     public function show($id)
@@ -91,13 +91,13 @@ class LoanController extends Controller
             return response()->json(['error' => 'Préstamo Incorrecto'], 400);
         }
 
-        $loanBook = Loan::where('book_id', $request->book_id)->where('status', '=', 0)->count();
+        $loanBook = Loan::where('book_id', $request->book_id)->where('status', '=', 0)->where('id' , '!=', $id)->count();
 
         if ($loanBook > 0){
             return response()->json(['error' => 'Ya existe un préstamo para este libro'], 400);
         }
 
-        $loanUser = Loan::where('book_id', $request->book_id)->where('user_id', $request->user_id)->where('status', '=', 0)->count();
+        $loanUser = Loan::where('book_id', $request->book_id)->where('user_id', $request->user_id)->where('status', '=', 0)->where('id' , '!=', $id)->count();
 
         if ($loanUser > 0){
             return response()->json(['error' => 'Ya existe un préstamo para este usuario'], 400);
@@ -113,11 +113,11 @@ class LoanController extends Controller
         return response()->json($loan);
     }
 
-    public function destroy($id)
-    {
-        $loan = Loan::find($id);
-        $loan->delete();
+    // public function destroy($id)
+    // {
+    //     $loan = Loan::find($id);
+    //     $loan->delete();
 
-        return response()->json(null, 204);
-    }
+    //     return response()->json(null, 204);
+    // }
 }
