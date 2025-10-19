@@ -27,10 +27,10 @@ class UserController extends Controller
 
     public function store(Request $request)
     {
-        Request::validate([
+        $request->validate([
             'name' => 'required|string|max:100',
             'email' => 'required|string|email|max:100',
-            'password' => 'required|string|max:100',
+            'password' => 'required|string|max:100'
         ]);
 
         $user = new User();
@@ -44,15 +44,19 @@ class UserController extends Controller
 
     public function update(Request $request, $id)
     {
-        Request::validate([
+        $request->validate([
             'name' => 'required|string|max:100',
-            'email' => 'required|string|email|max:100',
-            'password' => 'required|string|max:100',
+            'email' => 'required|string|email|max:100'
         ]);
         $user = User::find($id);
         $user->name = $request->name;
         $user->email = $request->email;
-        $user->password = Hash::make($request->password);
+        if ($request->password) {
+            $request->validate([
+                'password' => 'required|string|max:100'
+            ]);
+            $user->password = Hash::make($request->password);
+        }
         $user->save();
 
         return response()->json($user);

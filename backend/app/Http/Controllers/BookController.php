@@ -11,17 +11,17 @@ class BookController extends Controller
 {
     public function index()
     {
-        return response()->json(Book::all());
+        return response()->json(Book::with('author', 'gender')->get());
     }
 
     public function show($id)
     {
-        return response()->json(Book::find($id));
+        return response()->json(Book::with('author', 'gender')->find($id));
     }
 
     public function store(Request $request)
     {
-        Request::validate([
+        $request->validate([
             'title' => 'required|string|max:100',
             'author_id' => 'required|integer',
             'description' => 'required|string|max:255',
@@ -52,7 +52,7 @@ class BookController extends Controller
 
     public function update(Request $request, $id)
     {
-        Request::validate([
+        $request->validate([
             'title' => 'required|string|max:100',
             'author_id' => 'required|integer',
             'description' => 'required|string|max:255',

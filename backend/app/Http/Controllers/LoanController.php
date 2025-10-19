@@ -11,20 +11,20 @@ class LoanController extends Controller
 {
     public function index()
     {
-        return response()->json(Loan::all());
+        return response()->json(Loan::with('book', 'user')->get()->sortByDesc('loan_date'));
     }
 
     public function show($id)
     {
-        return response()->json(Loan::find($id));
+        return response()->json(Loan::with('book', 'user')->find($id));
     }
 
     public function store(Request $request)
     {
-        Request::validate([
+        $request->validate([
             'book_id' => 'required|integer',
             'user_id' => 'required|integer',
-            'status' => 'required|string|max:100',
+            'status' => 'required|integer',
             'loan_date' => 'required|date',
             'return_date' => 'required|date',
         ]);
@@ -41,6 +41,17 @@ class LoanController extends Controller
             return response()->json(['error' => 'Usuario Incorrecto'], 400);
         }
 
+        $loanUser = Loan::where('book_id', $request->book_id)->where('user_id', $request->user_id)->where('status', '=', 0)->count();
+
+        if ($loanUser > 0){
+            return response()->json(['error' => 'Ya existe un préstamo para este usuario'], 400);
+        }
+        
+        $bookStatus = Loan::where('book_id', $request->book_id)->where('status', '=', 0)->count();
+        
+        if ($bookStatus > 0){
+            return response()->json(['error' => 'Ya existe un préstamo para este libro'], 400);
+        }
         $loan = new Loan();
         $loan->book_id = $request->book_id;
         $loan->user_id = $request->user_id;
@@ -54,10 +65,10 @@ class LoanController extends Controller
 
     public function update(Request $request, $id)
     {
-        Request::validate([
+        $request->validate([
             'book_id' => 'required|integer',
             'user_id' => 'required|integer',
-            'status' => 'required|string|max:100',
+            'status' => 'required|integer',
             'loan_date' => 'required|date',
             'return_date' => 'required|date',
         ]);
@@ -78,6 +89,18 @@ class LoanController extends Controller
 
         if (!$loan){
             return response()->json(['error' => 'Préstamo Incorrecto'], 400);
+        }
+
+        $loanBook = Loan::where('book_id', $request->book_id)->where('status', '=', 0)->count();
+
+        if ($loanBook > 0){
+            return response()->json(['error' => 'Ya existe un préstamo para este libro'], 400);
+        }
+
+        $loanUser = Loan::where('book_id', $request->book_id)->where('user_id', $request->user_id)->where('status', '=', 0)->count();
+
+        if ($loanUser > 0){
+            return response()->json(['error' => 'Ya existe un préstamo para este usuario'], 400);
         }
 
         $loan->book_id = $request->book_id;

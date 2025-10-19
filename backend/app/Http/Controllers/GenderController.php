@@ -19,7 +19,7 @@ class GenderController extends Controller
 
     public function store(Request $request)
     {
-        Request::validate([
+        $request->validate([
             'name' => 'required|string|max:100',
         ]);
 
@@ -32,7 +32,7 @@ class GenderController extends Controller
 
     public function update(Request $request, $id)
     {
-        Request::validate([
+        $request->validate([
             'name' => 'required|string|max:100',
         ]);
         $gender = Gender::find($id);

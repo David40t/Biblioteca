@@ -19,12 +19,14 @@ class AuthorController extends Controller
 
     public function store(Request $request)
     {
-        Request::validate([
+        $request->validate([
             'name' => 'required|string|max:100',
+            'lastname' => 'required|string|max:100',
         ]);
 
         $author = new Author();
         $author->name = $request->name;
+        $author->lastname = $request->lastname;
         $author->save();
 
         return response()->json($author);
@@ -32,11 +34,13 @@ class AuthorController extends Controller
 
     public function update(Request $request, $id)
     {
-        Request::validate([
+        $request->validate([
             'name' => 'required|string|max:100',
+            'lastname' => 'required|string|max:100',
         ]);
         $author = Author::find($id);
         $author->name = $request->name;
+        $author->lastname = $request->lastname;
         $author->save();
 
         return response()->json($author);
