@@ -1,4 +1,4 @@
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import {
   getBook,
   getAuthors,
@@ -10,42 +10,49 @@ import { useEffect, useState } from "react";
 
 export default function Book() {
   const { id } = useParams();
+  const navigate = useNavigate();
+
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [authorId, setAuthorId] = useState("");
   const [genderId, setGenderId] = useState("");
   const [authors, setAuthors] = useState([]);
   const [genders, setGenders] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-  const isEdit = !!id; // true si hay id, false si no
+  const isEdit = !!id;
 
   useEffect(() => {
-    async function fetchAuthors() {
-      const data = await getAuthors();
-      setAuthors(data);
-    }
+    const fetchData = async () => {
+      try {
+        const [authorsData, gendersData] = await Promise.all([
+          getAuthors(),
+          getGenders(),
+        ]);
 
-    async function fetchGenders() {
-      const data = await getGenders();
-      setGenders(data);
-    }
+        setAuthors(authorsData);
+        setGenders(gendersData);
 
-    fetchAuthors();
-    fetchGenders();
-    if (!isEdit) return;
+        if (isEdit) {
+          const fetchedBook = await getBook(id);
+          setTitle(fetchedBook.title);
+          setDescription(fetchedBook.description);
+          setAuthorId(fetchedBook.author_id);
+          setGenderId(fetchedBook.gender_id);
+        }
+      } catch (err) {
+        console.error("Error al cargar datos del libro:", err);
+        setError("No se pudieron cargar los datos.");
+      } finally {
+        setLoading(false);
+      }
+    };
 
-    async function fetchBook() {
-      const fetchedBook = await getBook(id);
-      setTitle(fetchedBook.title);
-      setDescription(fetchedBook.description);
-      setAuthorId(fetchedBook.author_id);
-      setGenderId(fetchedBook.gender_id);
-    }
-
-    fetchBook();
+    fetchData();
   }, [id]);
 
-  function handleSubmit(e) {
+  async function handleSubmit(e) {
     e.preventDefault();
 
     const book = {
@@ -55,28 +62,32 @@ export default function Book() {
       gender_id: genderId,
     };
 
-    (async () => {
-      try {
-        if (isEdit) {
-          await updateBook(book, id);
-          alert("Libro actualizado con éxito");
-        } else {
-          await createBook(book);
-          alert("Libro creado con éxito");
-        }
-        window.location.href = "/books"; // redirige después de guardar
-      } catch (error) {
-        alert(error)
+    try {
+      if (isEdit) {
+        await updateBook(book, id);
+        alert("Libro actualizado con éxito");
+      } else {
+        await createBook(book);
+        alert("Libro creado con éxito");
       }
-    })();
+      navigate("/books");
+    } catch (error) {
+      alert(error)
+    }
   }
+
+  if (loading) return <p>Cargando libro...</p>;
+  if (error) return <p className="text-danger">{error}</p>;
 
   return (
     <div>
-      <h1>Book</h1>
+      <h1>{isEdit ? "Editar Libro" : "Crear Libro"}</h1>
+      <button className="btn btn-outline-secondary" onClick={() => navigate("/books")}>
+        Volver
+      </button>
       <form className="form-control" onSubmit={handleSubmit}>
-        <label className="form-label" for="title">
-          Title
+        <label className="form-label" htmlFor="title">
+          Título
         </label>
         <input
           className="form-control"
@@ -87,8 +98,9 @@ export default function Book() {
           id="title"
           required
         />
-        <label className="form-label" for="description">
-          Description
+
+        <label className="form-label" htmlFor="description">
+          Descripción
         </label>
         <textarea
           className="form-control"
@@ -98,8 +110,9 @@ export default function Book() {
           onChange={(e) => setDescription(e.target.value)}
           required
         />
-        <label className="form-label" for="author_id">
-          Author
+
+        <label className="form-label" htmlFor="author_id">
+          Autor
         </label>
         <select
           className="form-control"
@@ -107,7 +120,8 @@ export default function Book() {
           id="author_id"
           value={authorId}
           onChange={(e) => setAuthorId(e.target.value)}
-          required>
+          required
+        >
           <option value="">Selecciona un autor</option>
           {authors.map((author) => (
             <option key={author.id} value={author.id}>
@@ -115,8 +129,9 @@ export default function Book() {
             </option>
           ))}
         </select>
-        <label className="form-label" for="gender_id">
-          Gender
+
+        <label className="form-label" htmlFor="gender_id">
+          Género
         </label>
         <select
           className="form-control"
@@ -124,7 +139,8 @@ export default function Book() {
           id="gender_id"
           value={genderId}
           onChange={(e) => setGenderId(e.target.value)}
-          required>
+          required
+        >
           <option value="">Selecciona un género</option>
           {genders.map((gender) => (
             <option key={gender.id} value={gender.id}>
@@ -132,6 +148,7 @@ export default function Book() {
             </option>
           ))}
         </select>
+
         <button className="btn btn-outline-success mt-3" type="submit">
           {isEdit ? "Actualizar" : "Crear"}
         </button>

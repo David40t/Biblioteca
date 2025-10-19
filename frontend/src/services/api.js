@@ -249,13 +249,38 @@ export async function deleteBook(id) {
     return true;
 }
 
-export async function deleteLoan(id) {
-    const res = await fetch(`${API}loans/${id}`, {
-        method: 'DELETE',
-    }); 
-    if (!res.ok){
+export async function getBooksLoans() {
+    const res = await fetch(`${API}stats/books_loans`);
+    if(!res.ok){
         const error = await res.json();
-        throw new Error(error.error || 'Error al eliminar el préstamo');
+        throw new Error(error.error || 'Error al obtener los libros con préstamos');
     }
-    return true;
+    return res.json();
+}
+
+export async function getUsersLoans() {
+    const res = await fetch(`${API}stats/users_loans`);
+    if(!res.ok){
+        const error = await res.json();
+        throw new Error(error.error || 'Error al obtener los usuarios con préstamos');
+    }
+    return res.json();
+}
+
+export async function getLoanDefeated() {
+    const res = await fetch(`${API}stats/loan_defeated`);
+    if(!res.ok){
+        const error = await res.json();
+        throw new Error(error.error || 'Error al obtener los préstamos vencidos');
+    }
+    return res.json();
+}
+
+export async function getTopBooks() {
+    const res = await fetch(`${API}stats/books_more_loans_top_5`);
+    if(!res.ok){
+        const error = await res.json();
+        throw new Error(error.error || 'Error al obtener los libros más prestados');
+    }
+    return res.json();
 }

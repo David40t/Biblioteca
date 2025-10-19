@@ -1,53 +1,68 @@
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { getAuthor, updateAuthor, createAuthor } from "../services/api.js";
 import { useEffect, useState } from "react";
 
 export default function Author() {
   const { id } = useParams();
+  const navigate = useNavigate();
+
   const [name, setName] = useState("");
   const [lastName, setLastName] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
 
-  const isEdit = !!id; // true si hay id, false si no
+  const isEdit = !!id;
 
   useEffect(() => {
     if (!isEdit) return;
 
-    async function fetchAuthor() {
-      const fetchedAuthor = await getAuthor(id);
-      setName(fetchedAuthor.name);
-      setLastName(fetchedAuthor.lastname);
-    }
+    const fetchAuthor = async () => {
+      try {
+        setLoading(true);
+        const fetchedAuthor = await getAuthor(id);
+        setName(fetchedAuthor.name || "");
+        setLastName(fetchedAuthor.lastname || "");
+      } catch (err) {
+        setError("Error al cargar el autor.");
+        console.error(err);
+      } finally {
+        setLoading(false);
+      }
+    };
 
     fetchAuthor();
   }, [id]);
 
-  function handleSubmit(e) {
+  async function handleSubmit(e) {
     e.preventDefault();
+    const author = { name, lastname: lastName };
 
-    const author = { name, lastname : lastName };
-
-    (async () => {
-      try {
-        if (isEdit) {
-          await updateAuthor(author, id);
-          alert("Autor actualizado con éxito");
-        } else {
-          await createAuthor(author);
-          alert("Autor creado con éxito");
-        }
-        window.location.href = "/authors"; // redirige después de guardar
-      } catch (error) {
-        alert(error)
+    try {
+      if (isEdit) {
+        await updateAuthor(author, id);
+        alert("Autor actualizado con éxito");
+      } else {
+        await createAuthor(author);
+        alert("Autor creado con éxito");
       }
-    })();
+      navigate("/authors");
+    } catch (error) {
+      alert(error)
+    }
   }
+
+  if (loading) return <p>Cargando autor...</p>;
+  if (error) return <p className="text-danger">{error}</p>;
 
   return (
     <div>
-      <h1>Autor</h1>
+      <h1>{isEdit ? "Editar Autor" : "Crear Autor"}</h1>
+      <button className="btn btn-outline-secondary" onClick={() => navigate("/authors")}>
+        Volver
+      </button>
       <form className="form-control" onSubmit={handleSubmit}>
-        <label className="form-label" for="name">
-          Name
+        <label className="form-label" htmlFor="name">
+          Nombre
         </label>
         <input
           className="form-control"
@@ -58,8 +73,8 @@ export default function Author() {
           id="name"
           required
         />
-        <label className="form-label" for="last_name">
-          Last Name
+        <label className="form-label" htmlFor="last_name">
+          Apellido
         </label>
         <input
           className="form-control"
