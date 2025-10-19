@@ -1,16 +1,71 @@
-# React + Vite
+# Frontend Biblioteca
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Este es el frontend de la aplicación Biblioteca, desarrollado con React y Vite.
 
-Currently, two official plugins are available:
+## Requisitos Previos
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- Node.js >= 16
+- npm >= 8
 
-## React Compiler
+## Instalación
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+1. Instalar dependencias:
+```bash
+npm install
+```
 
-## Expanding the ESLint configuration
+2. Configurar variables de entorno:
+```bash
+cp .env.example .env
+```
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+## Estructura del Proyecto
+
+```
+src/
+├── assets/     # Recursos estáticos
+├── pages/      # Componentes de páginas
+└── services/   # Servicios y llamadas a API
+```
+
+## Scripts Disponibles
+
+### Desarrollo
+
+Para iniciar el servidor de desarrollo:
+```bash
+npm run dev
+```
+
+### Construcción
+
+Para construir la aplicación para producción:
+```bash
+npm run build
+```
+
+### Vista previa
+
+Para previsualizar la versión de producción:
+```bash
+npm run preview
+```
+
+## Características
+
+- Interfaz moderna y responsive
+- Integración con API REST del backend
+- Gestión de estado eficiente
+- Rutas protegidas
+- Validación de formularios
+
+## ESLint
+
+El proyecto utiliza ESLint para mantener un código limpio y consistente. Puedes ejecutar el linter con:
+```bash
+npm run lint
+```
+
+## Licencia
+
+Este proyecto está bajo la Licencia MIT.
